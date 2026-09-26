@@ -1,0 +1,49 @@
+{
+  "id": "/",
+  "name": "VoiceFlow AI — Voice Task Manager",
+  "short_name": "VoiceFlow",
+  "description": "Voice-first AI task manager and idea capture tool that turns spoken words into structured action items.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Record Voice Memo",
+      "short_name": "Record",
+      "description": "Quickly record a new voice task",
+      "url": "/#simulator",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Today's Tasks",
+      "short_name": "Tasks",
+      "description": "View prioritized daily tasks",
+      "url": "/#dashboard",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

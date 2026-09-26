@@ -1,0 +1,6 @@
+{
+  "name": "VoiceFlow AI",
+  "description": "A voice-first AI task manager and idea capture tool that transforms spoken thoughts into structured tasks, checklists, and priorities.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
