@@ -226,6 +226,78 @@
       .sound-bar {
         transition: height 0.15s ease-in-out;
       }
+
+      /* Mode Switching: App Mode (Clean, Native Mobile UX) vs Web Mode (Marketing Landing Page) */
+      /* Automatic Mobile Responsive Defaults (App Mode on phones, Web Mode on desktops) */
+      @media (max-width: 768px) {
+        body:not(.web-mode) .web-marketing-content {
+          display: none !important;
+        }
+        body:not(.web-mode) header#desktop-header {
+          display: none !important;
+        }
+        body:not(.web-mode) #mobile-app-header {
+          display: block !important;
+        }
+        body:not(.web-mode) #mobile-bottom-nav {
+          display: flex !important;
+        }
+        body:not(.web-mode) #simulator {
+          padding-top: 1rem !important;
+          padding-bottom: 1.5rem !important;
+        }
+        body:not(.web-mode) #dashboard {
+          padding-top: 1rem !important;
+          padding-bottom: 6rem !important;
+        }
+      }
+
+      /* Explicit App Mode (Can be triggered on desktop or mobile) */
+      body.app-mode .web-marketing-content {
+        display: none !important;
+      }
+      body.app-mode header#desktop-header {
+        display: none !important;
+      }
+      body.app-mode #mobile-app-header {
+        display: block !important;
+      }
+      body.app-mode #mobile-bottom-nav {
+        display: flex !important;
+      }
+      body.app-mode #simulator {
+        padding-top: 1rem !important;
+        padding-bottom: 1.5rem !important;
+      }
+      body.app-mode #dashboard {
+        padding-top: 1rem !important;
+        padding-bottom: 6rem !important;
+      }
+
+      /* Explicit Web Mode (Can be triggered on mobile or desktop) */
+      body.web-mode .web-marketing-content {
+        display: block !important;
+      }
+      body.web-mode header#desktop-header {
+        display: block !important;
+      }
+      body.web-mode #mobile-app-header {
+        display: none !important;
+      }
+      @media (min-width: 1024px) {
+        body.web-mode #mobile-bottom-nav {
+          display: none !important;
+        }
+      }
+
+      /* Utility for hiding scrollbar on horizontal tabs */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
     </style>
   </head>
   <body class="min-h-screen bg-slateNavy text-crispText antialiased selection:bg-electricIndigo selection:text-white relative overflow-x-hidden">
@@ -241,8 +313,57 @@
       <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25"></div>
     </div>
 
-    <!-- ================= STICKY HEADER / NAV ================= -->
-    <header class="sticky top-0 z-40 backdrop-blur-xl bg-slateNavy/85 border-b border-borderSlate/80 transition-all">
+    <!-- ================= DEDICATED NATIVE MOBILE APP HEADER ================= -->
+    <header id="mobile-app-header" class="hidden sticky top-0 z-40 bg-slateNavy/95 backdrop-blur-xl border-b border-borderSlate/80 px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- Logo & Status -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-electricIndigo to-sunsetOrange flex items-center justify-center shadow-lg shadow-electricIndigo/30 shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-base font-extrabold text-white tracking-tight">VoiceFlow</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+            <div class="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+              <span id="mobile-date-label">Today</span>
+              <span>•</span>
+              <span id="mobile-task-summary">3 Active Tasks</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Toggle & Quick Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Web Mode Switcher -->
+          <button onclick="toggleViewMode()" id="mobile-view-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-surfaceNavy hover:bg-slate-700 text-indigo-300 hover:text-white border border-borderSlate text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-sm">
+            <span>🌐</span>
+            <span id="mobile-view-toggle-label">Web Story</span>
+          </button>
+          <button onclick="openTutorialModal()" title="Tutorial Guide" class="p-2 rounded-xl bg-surfaceNavy hover:bg-slate-700 text-gray-300 hover:text-white border border-borderSlate transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Next Scheduled Alarm Bar -->
+      <div id="mobile-live-alarm-bar" class="mt-2.5 px-3 py-1.5 rounded-xl bg-cardNavy/90 border border-amber-500/30 flex items-center justify-between text-xs cursor-pointer hover:border-amber-500/60 transition" onclick="switchDashboardTab('notifications'); document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });">
+        <div class="flex items-center gap-2 truncate">
+          <span class="text-amber-400">⏰</span>
+          <span class="text-[11px] text-amber-300 font-bold shrink-0">Next Alarm:</span>
+          <span id="mobile-active-alarm-title" class="text-[11px] text-gray-300 truncate">Tomorrow • 10:00 AM — Partnership Proposal</span>
+        </div>
+        <span class="text-[10px] text-indigo-300 shrink-0 font-bold ml-1">Alarms &rarr;</span>
+      </div>
+    </header>
+
+    <!-- ================= STICKY DESKTOP HEADER / NAV ================= -->
+    <header id="desktop-header" class="sticky top-0 z-40 backdrop-blur-xl bg-slateNavy/85 border-b border-borderSlate/80 transition-all">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <!-- Logo -->
         <a href="#" class="flex items-center gap-3 group">
@@ -293,6 +414,12 @@
 
         <!-- Header CTA Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Switch to App View -->
+          <button onclick="toggleViewMode()" title="Switch to Mobile App Interface" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-surfaceNavy/90 hover:bg-slate-700 text-amber-300 hover:text-white border border-amber-500/30 transition cursor-pointer shadow-sm">
+            <span>📱</span>
+            <span id="desktop-view-toggle-text">App View</span>
+          </button>
+
           <!-- Install Mobile App Button -->
           <button id="header-install-btn" onclick="handleInstallClick()" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-surfaceNavy/90 hover:bg-slate-700 text-indigo-200 hover:text-white border border-borderSlate hover:border-indigo-500/40 transition cursor-pointer shadow-sm">
             <svg class="w-3.5 h-3.5 text-sunsetOrange animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -320,7 +447,7 @@
     <main class="relative z-10">
 
       <!-- ================= HERO SECTION ================= -->
-      <section class="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
+      <section id="hero-section" class="web-marketing-content relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           
           <!-- Trust Badge / Scarcity Pill -->
@@ -401,7 +528,7 @@
       </section>
 
       <!-- ================= HOW IT WORKS 3-STEP SECTION ================= -->
-      <section id="how-it-works" class="py-20 bg-cardNavy/40 border-y border-borderSlate/70">
+      <section id="how-it-works" class="web-marketing-content py-20 bg-cardNavy/40 border-y border-borderSlate/70">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center max-w-3xl mx-auto mb-16">
             <span class="text-xs font-bold uppercase tracking-wider text-sunsetOrange">Zero Friction Pipeline</span>
@@ -462,10 +589,10 @@
       </section>
 
       <!-- ================= INTERACTIVE VOICE / TEXT SIMULATOR MODULE ================= -->
-      <section id="simulator" class="py-20 relative">
+      <section id="simulator" class="py-12 sm:py-16 lg:py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div class="text-center max-w-3xl mx-auto mb-12">
+          <div class="web-marketing-content text-center max-w-3xl mx-auto mb-12">
             <span class="text-xs font-bold uppercase tracking-wider text-sunsetOrange px-3 py-1 rounded-full bg-sunsetOrange/10 border border-sunsetOrange/20">Live Interactive Lab</span>
             <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-3">Experience VoiceFlow in Real Time</h2>
             <p class="text-mutedText mt-3 text-base">
@@ -710,8 +837,8 @@
       <section id="dashboard" class="py-20 bg-cardNavy/50 border-t border-borderSlate">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-            <div>
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div class="web-marketing-content">
               <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 Local Browser State (LocalStorage Synced)
@@ -720,25 +847,25 @@
               <p class="text-mutedText mt-2 text-sm">Check off completed items, capture quick thoughts, and manage your parsed voice items.</p>
             </div>
 
-            <!-- Tab Switcher -->
-            <div class="flex flex-wrap p-1.5 rounded-2xl bg-slateNavy border border-borderSlate text-xs font-bold text-gray-300 gap-1">
-              <button id="tab-btn-tasks" onclick="switchDashboardTab('tasks')" class="dash-tab px-4 py-2 rounded-xl bg-electricIndigo text-white transition cursor-pointer shadow-md">
+            <!-- Tab Switcher (Smooth Horizontal Scroll on Mobile) -->
+            <div class="flex items-center overflow-x-auto no-scrollbar scrollbar-none p-1.5 rounded-2xl bg-slateNavy border border-borderSlate text-xs font-bold text-gray-300 gap-1 w-full max-w-full pb-2 sm:pb-1.5">
+              <button id="tab-btn-tasks" onclick="switchDashboardTab('tasks')" class="dash-tab shrink-0 px-4 py-2 rounded-xl bg-electricIndigo text-white transition cursor-pointer shadow-md">
                 Today's Tasks (<span id="task-count-badge">3</span>)
               </button>
-              <button id="tab-btn-ideas" onclick="switchDashboardTab('ideas')" class="dash-tab px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
+              <button id="tab-btn-notifications" onclick="switchDashboardTab('notifications')" class="dash-tab shrink-0 px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Alarms & Reminders (<span id="tab-alarm-count">2</span>)</span>
+              </button>
+              <button id="tab-btn-ideas" onclick="switchDashboardTab('ideas')" class="dash-tab shrink-0 px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
                 Idea Vault (<span id="idea-count-badge">2</span>)
               </button>
-              <button id="tab-btn-recordings" onclick="switchDashboardTab('recordings')" class="dash-tab px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
-                Recent Recordings (<span id="rec-count-badge">2</span>)
+              <button id="tab-btn-recordings" onclick="switchDashboardTab('recordings')" class="dash-tab shrink-0 px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">
+                Audio Notes (<span id="rec-count-badge">2</span>)
               </button>
-              <button id="tab-btn-notifications" onclick="switchDashboardTab('notifications')" class="dash-tab px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Messaging & Alerts (Opt-in)</span>
-              </button>
-              <button id="tab-btn-roadmap" onclick="switchDashboardTab('roadmap')" class="dash-tab px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer flex items-center gap-1.5">
+              <button id="tab-btn-roadmap" onclick="switchDashboardTab('roadmap')" class="dash-tab shrink-0 px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer flex items-center gap-1.5">
                 <span class="text-sunsetOrange font-black">✦</span>
-                <span>AI Feature Lab & Roadmap</span>
-                <span class="bg-sunsetOrange/20 text-sunsetOrange text-[10px] px-2 py-0.5 rounded-full font-bold">Upcoming Drops</span>
+                <span>AI Roadmap</span>
+                <span class="bg-sunsetOrange/20 text-sunsetOrange text-[10px] px-1.5 py-0.5 rounded-full font-bold">Drops</span>
               </button>
             </div>
           </div>
@@ -857,9 +984,38 @@
             </div>
           </div>
 
-          <!-- TAB 4: OPT-IN MESSAGING, REMINDERS & NOTIFICATION CHANNELS -->
+          <!-- TAB 4: ALARMS & MULTI-CHANNEL REMINDERS -->
           <div id="tab-content-notifications" class="hidden space-y-6">
             
+            <!-- Active Scheduled Alarms Hub -->
+            <div class="bg-cardNavy border border-borderSlate rounded-3xl p-5 sm:p-7 shadow-xl">
+              <div class="flex items-center justify-between pb-4 border-b border-borderSlate mb-4">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-amber-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                      <span>Scheduled Voice Alarms</span>
+                      <span id="active-alarms-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">2 Active</span>
+                    </h3>
+                    <p class="text-xs text-mutedText">Extracted automatically from spoken cues ("tomorrow 10 AM", "Monday afternoon").</p>
+                  </div>
+                </div>
+                <button onclick="playAlarmChime()" title="Test audio alarm chime" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  <span>🔔</span>
+                  <span class="hidden sm:inline">Test</span> Chime
+                </button>
+              </div>
+
+              <!-- List of active alarms rendered dynamically -->
+              <div id="active-alarms-container" class="space-y-3">
+                <!-- Dynamically rendered by renderAlarms() -->
+              </div>
+            </div>
+
             <div class="bg-cardNavy border border-borderSlate rounded-3xl p-6 sm:p-8 space-y-6">
               
               <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-borderSlate gap-4">
@@ -1354,7 +1510,7 @@
       </section>
 
       <!-- ================= FEATURE COMPARISON TABLE ================= -->
-      <section id="comparison" class="py-20 relative">
+      <section id="comparison" class="web-marketing-content py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div class="text-center max-w-3xl mx-auto mb-16">
@@ -1449,7 +1605,7 @@
       </section>
 
       <!-- ================= TRANSPARENT PRICING CARD SECTION ================= -->
-      <section id="pricing" class="py-20 bg-cardNavy/40 border-y border-borderSlate relative">
+      <section id="pricing" class="web-marketing-content py-20 bg-cardNavy/40 border-y border-borderSlate relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div class="text-center max-w-2xl mx-auto mb-16">
@@ -1540,7 +1696,7 @@
       </section>
 
       <!-- ================= INTERACTIVE FAQ ACCORDION ================= -->
-      <section id="faq" class="py-20">
+      <section id="faq" class="web-marketing-content py-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div class="text-center mb-14">
@@ -2212,44 +2368,45 @@ npx cap open android</pre>
       <!-- ================= MOBILE SCREEN BOTTOM NAVIGATION BAR ================= -->
       <nav id="mobile-bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-cardNavy/95 backdrop-blur-xl border-t border-borderSlate/90 px-4 py-2 flex items-center justify-around shadow-2xl pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         
-        <!-- Home -->
-        <a href="#" class="flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 hover:text-white transition">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span>Home</span>
-        </a>
-
         <!-- Tasks -->
-        <a href="#dashboard" onclick="switchDashboardTab('tasks')" class="flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 hover:text-white transition relative">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button onclick="switchDashboardTab('tasks'); document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });" class="flex flex-col items-center gap-1 text-[10px] font-bold text-gray-300 hover:text-white transition relative cursor-pointer">
+          <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
           <span>Tasks</span>
-          <span id="nav-task-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-electricIndigo text-[9px] font-mono text-white flex items-center justify-center">3</span>
-        </a>
+          <span id="nav-task-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-electricIndigo text-[9px] font-mono text-white flex items-center justify-center shadow">3</span>
+        </button>
 
-        <!-- Center Glowing Mic Button -->
-        <a href="#simulator" onclick="triggerMobileMicTap()" class="-mt-6 w-14 h-14 rounded-full bg-gradient-to-tr from-sunsetOrange to-amber-500 text-white flex items-center justify-center shadow-lg shadow-sunsetOrange/50 border-4 border-slateNavy hover:scale-105 active:scale-95 transition-transform">
+        <!-- Alarms & Alerts -->
+        <button onclick="switchDashboardTab('notifications'); document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });" class="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-400 hover:text-white transition cursor-pointer relative">
+          <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Alarms</span>
+          <span id="nav-alarm-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-[9px] font-mono text-white flex items-center justify-center shadow">2</span>
+        </button>
+
+        <!-- Center Glowing Mic Button (Fast Voice Capture) -->
+        <button onclick="triggerMobileMicTap()" class="-mt-6 w-14 h-14 rounded-full bg-gradient-to-tr from-sunsetOrange to-amber-500 text-white flex items-center justify-center shadow-lg shadow-sunsetOrange/50 border-4 border-slateNavy hover:scale-105 active:scale-95 transition-transform cursor-pointer" title="Speak to create task">
           <svg class="w-7 h-7 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
           </svg>
-        </a>
+        </button>
 
         <!-- Vault -->
-        <a href="#dashboard" onclick="switchDashboardTab('ideas')" class="flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 hover:text-white transition">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button onclick="switchDashboardTab('ideas'); document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });" class="flex flex-col items-center gap-1 text-[10px] font-bold text-gray-300 hover:text-white transition cursor-pointer">
+          <svg class="w-5 h-5 text-sunsetOrange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
           <span>Vault</span>
-        </a>
+        </button>
 
-        <!-- Install / App Guide -->
-        <button onclick="handleInstallClick()" class="flex flex-col items-center gap-1 text-[10px] font-bold text-sunsetOrange hover:text-white transition cursor-pointer">
+        <!-- Mode Toggle (Web vs App) -->
+        <button onclick="toggleViewMode()" class="flex flex-col items-center gap-1 text-[10px] font-bold text-indigo-300 hover:text-white transition cursor-pointer">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
           </svg>
-          <span id="nav-install-label">Install</span>
+          <span id="nav-mode-label">Web Story</span>
         </button>
 
       </nav>
@@ -2257,7 +2414,7 @@ npx cap open android</pre>
     </main>
 
     <!-- ================= CLEAN FOOTER ================= -->
-    <footer class="bg-cardNavy border-t border-borderSlate py-12 relative z-10">
+    <footer class="web-marketing-content bg-cardNavy border-t border-borderSlate py-12 relative z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-borderSlate/60">
@@ -2865,6 +3022,7 @@ npx cap open android</pre>
           document.getElementById('tab-btn-notifications').classList.remove('text-gray-400');
           document.getElementById('tab-content-notifications').classList.remove('hidden');
           updatePushPermissionUI();
+          renderAlarms();
         } else if (tabName === 'roadmap') {
           const btnRoadmap = document.getElementById('tab-btn-roadmap');
           if (btnRoadmap) {
@@ -3039,8 +3197,10 @@ npx cap open android</pre>
 
       function renderDashboard() {
         renderTasks();
+        renderAlarms();
         renderIdeas();
         renderRecordings();
+        updateMobileHeaderSummary();
       }
 
       function renderTasks() {
@@ -3190,6 +3350,201 @@ npx cap open android</pre>
         saveStorage();
         renderTasks();
         showToast('Task added to prioritized list!');
+      }
+
+      // ================= ALARMS & SCHEDULED VOICE REMINDERS CONTROLLER =================
+      function renderAlarms() {
+        const container = document.getElementById('active-alarms-container');
+        const badge = document.getElementById('active-alarms-badge');
+        const tabAlarmCount = document.getElementById('tab-alarm-count');
+        const navAlarmBadge = document.getElementById('nav-alarm-badge');
+        const mobileAlarmBar = document.getElementById('mobile-live-alarm-bar');
+        const mobileAlarmTitle = document.getElementById('mobile-active-alarm-title');
+
+        const tasksWithAlarms = appTasks.filter(t => t.alarm && !t.completed);
+
+        if (badge) badge.innerText = `${tasksWithAlarms.length} Active`;
+        if (tabAlarmCount) tabAlarmCount.innerText = tasksWithAlarms.length;
+        if (navAlarmBadge) navAlarmBadge.innerText = tasksWithAlarms.length;
+
+        // Update mobile top bar with next upcoming alarm
+        if (tasksWithAlarms.length > 0) {
+          if (mobileAlarmTitle) {
+            mobileAlarmTitle.innerText = `${tasksWithAlarms[0].alarm} — ${tasksWithAlarms[0].title}`;
+          }
+          if (mobileAlarmBar) {
+            mobileAlarmBar.classList.remove('hidden');
+          }
+        } else {
+          if (mobileAlarmBar) {
+            mobileAlarmBar.classList.add('hidden');
+          }
+        }
+
+        if (!container) return;
+
+        if (tasksWithAlarms.length === 0) {
+          container.innerHTML = `
+            <div class="p-6 text-center text-xs text-mutedText bg-slateNavy/60 rounded-2xl border border-borderSlate">
+              No active alarms scheduled. Dictate a voice task mentioning "tomorrow at 10 AM" or "Monday 2 PM" to set an automated alarm!
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = tasksWithAlarms.map(t => {
+          let prioColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+          if (t.priority === 'HIGH') prioColor = 'bg-red-500/20 text-red-400 border-red-500/40';
+          if (t.priority === 'LOW') prioColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+          return `
+            <div class="p-3.5 sm:p-4 rounded-2xl bg-slateNavy/80 border border-borderSlate hover:border-amber-500/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg class="w-4 h-4 text-amber-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-amber-400">${t.alarm}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-bold border ${prioColor}">${t.priority}</span>
+                  </div>
+                  <h4 class="text-sm font-bold text-white mt-0.5">${t.title}</h4>
+                  <div class="text-[11px] text-gray-400 mt-1">${t.category || '#Work'} • ${t.checklist && t.checklist.length ? t.checklist.length + ' checklist items' : 'Direct directive'}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 self-end sm:self-center">
+                <button onclick="playAlarmChime()" title="Test audio alarm chime" class="px-2.5 py-1.5 rounded-lg bg-surfaceNavy hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-borderSlate transition flex items-center gap-1 cursor-pointer">
+                  <span>🔔</span>
+                  <span>Chime</span>
+                </button>
+                <button onclick="snoozeAlarm('${t.id}')" title="Snooze 1 hour" class="px-2.5 py-1.5 rounded-lg bg-surfaceNavy hover:bg-slate-700 text-gray-300 text-xs font-semibold border border-borderSlate transition cursor-pointer">
+                  +1h Snooze
+                </button>
+                <button onclick="toggleTaskDone('${t.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
+                  Dismiss / Done
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function snoozeAlarm(id) {
+        if (navigator.vibrate) navigator.vibrate(20);
+        const task = appTasks.find(t => t.id === id);
+        if (task) {
+          task.alarm = 'Snoozed • In 1 Hour';
+          saveStorage();
+          renderDashboard();
+          showToast(`⏰ Alarm for "${task.title.slice(0, 24)}..." snoozed by 1 hour.`);
+        }
+      }
+
+      function playAlarmChime() {
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const now = ctx.currentTime;
+          
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(587.33, now);
+          gain1.gain.setValueAtTime(0.18, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.35);
+
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(880, now + 0.28);
+          gain2.gain.setValueAtTime(0.22, now + 0.28);
+          gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.75);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(now + 0.28);
+          osc2.stop(now + 0.75);
+
+          showToast('🔔 Alarm chime sounded successfully!');
+        } catch (err) {
+          console.warn('AudioContext chime error:', err);
+        }
+      }
+
+      function updateMobileHeaderSummary() {
+        const activeCount = appTasks.filter(t => !t.completed).length;
+        const alarmsCount = appTasks.filter(t => !t.completed && t.alarm).length;
+        const summaryEl = document.getElementById('mobile-task-summary');
+        if (summaryEl) {
+          summaryEl.innerText = `${activeCount} Active Tasks • ${alarmsCount} Alarms`;
+        }
+        const dateEl = document.getElementById('mobile-date-label');
+        if (dateEl) {
+          const now = new Date();
+          const options = { weekday: 'short', month: 'short', day: 'numeric' };
+          dateEl.innerText = now.toLocaleDateString('en-US', options);
+        }
+      }
+
+      // ================= VIEW MODE CONTROLLER (APP MODE vs WEB STORY) =================
+      let currentViewMode = 'app';
+
+      function initViewMode() {
+        const savedMode = localStorage.getItem('voiceflow_view_mode');
+        const isMobileScreen = window.innerWidth < 768;
+        const isPWA = isRunningStandalone();
+
+        if (savedMode === 'web' || savedMode === 'app') {
+          setViewMode(savedMode, false);
+        } else {
+          // On mobile or standalone installed PWA, default to 'app' mode (crisp, zero marketing clutter)
+          // On desktop, default to 'web' mode
+          if (isMobileScreen || isPWA) {
+            setViewMode('app', false);
+          } else {
+            setViewMode('web', false);
+          }
+        }
+      }
+
+      function setViewMode(mode, showFeedback = true) {
+        currentViewMode = mode;
+        localStorage.setItem('voiceflow_view_mode', mode);
+
+        const body = document.body;
+        const mobileToggleLabel = document.getElementById('mobile-view-toggle-label');
+        const navModeLabel = document.getElementById('nav-mode-label');
+        const desktopToggleText = document.getElementById('desktop-view-toggle-text');
+
+        if (mode === 'app') {
+          body.classList.add('app-mode');
+          body.classList.remove('web-mode');
+          if (mobileToggleLabel) mobileToggleLabel.innerText = 'Web Story';
+          if (navModeLabel) navModeLabel.innerText = 'Web Story';
+          if (desktopToggleText) desktopToggleText.innerText = 'App View';
+          if (showFeedback) showToast('📱 Switched to Crisp Mobile App Mode');
+        } else {
+          body.classList.add('web-mode');
+          body.classList.remove('app-mode');
+          if (mobileToggleLabel) mobileToggleLabel.innerText = 'App View';
+          if (navModeLabel) navModeLabel.innerText = 'App View';
+          if (desktopToggleText) desktopToggleText.innerText = 'App View';
+          if (showFeedback) showToast('🌐 Switched to Full Marketing Webpage');
+        }
+      }
+
+      function toggleViewMode() {
+        if (navigator.vibrate) navigator.vibrate(20);
+        const newMode = currentViewMode === 'app' ? 'web' : 'app';
+        setViewMode(newMode, true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       // ================= IDEA VAULT =================
@@ -3922,6 +4277,7 @@ npx cap open android`;
 
       // ================= INITIAL LOAD =================
       window.addEventListener('DOMContentLoaded', () => {
+        initViewMode();
         loadStorage();
         renderDashboard();
         loadNotificationPreferences();
